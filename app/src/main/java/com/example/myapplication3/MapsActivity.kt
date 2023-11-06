@@ -1,5 +1,6 @@
 package com.example.myapplication3
 
+import android.location.Geocoder
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication3.databinding.ActivityMapsBinding
@@ -20,6 +21,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -42,6 +46,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * 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
      * あいうえお
      * かきくけこ
+     * さしすせそ
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
