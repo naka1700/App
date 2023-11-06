@@ -40,12 +40,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * installed Google Play services and returned to the app.
      * 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
      * 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
-     * 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
      * あいうえお
      * かきくけこ
      * さしすせそ
      * たちつてと
-     * わをん
+     * なにぬねの
+     * はひふへほ
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
