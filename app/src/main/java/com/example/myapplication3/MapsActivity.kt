@@ -45,6 +45,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * かきくけこ
      * さしすせそ
      * たちつてと
+     * わをん
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
