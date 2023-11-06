@@ -39,7 +39,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      * 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
+     * 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
      * あいうえお
+     * かきくけこ
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
