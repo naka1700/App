@@ -1,6 +1,9 @@
 package com.example.myapplication3
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication3.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -28,6 +31,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        val sendButton = findViewById<Button>(R.id.ホームに戻る_button)
+        // lambda式
+        // lambda式
+        sendButton.setOnClickListener { v: View? ->
+            val intent = Intent(application, HomeActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     /**
@@ -90,7 +101,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.moveCamera(cUpdate)
 
 
+
+
     }
+
 
 
 }
