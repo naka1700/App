@@ -86,6 +86,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 17.5f))
         }
 
+
+
         mMap.setOnMapLongClickListener { longpushLocation: LatLng ->
             val newlocation = LatLng(longpushLocation.latitude, longpushLocation.longitude)
             mMap.addMarker(
