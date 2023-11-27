@@ -10,8 +10,10 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import java.util.*
 
 
@@ -27,18 +29,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
         val sendButton = findViewById<Button>(R.id.ホームに戻る_button)
-        // lambda式
-        // lambda式
+
         sendButton.setOnClickListener { v: View? ->
             val intent = Intent(application, HomeActivity::class.java)
             startActivity(intent)
         }
+
+
     }
 
     /**
@@ -67,27 +70,93 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-
-        // Add a marker in Sydney and move the camera
+        //以下マップピンのコード
         location = LatLng(34.98507661036779, 135.75255078869654)
         mMap.addMarker(MarkerOptions().position(location).title("Marker in 京都コンピュータ学院"))
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 17.5F));
 
+
+        /** //tap
         mMap.setOnMapClickListener { tapLocation: LatLng ->
             // tapされた位置の緯度経度
             location = LatLng(tapLocation.latitude, tapLocation.longitude)
-            val str: String = java.lang.String.format(
+            val pin: String = java.lang.String.format(
                 Locale.US,
                 "%f, %f",
                 tapLocation.latitude,
                 tapLocation.longitude
             )
-            mMap.addMarker(MarkerOptions().position(location).title(str))
+            mMap.addMarker(MarkerOptions().position(location).title(pin))
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 17.5f))
+
+            // タップされた場所のリストを定義
+            val tappedLocations: MutableList<LatLng> = mutableListOf()
+
+// マップのクリックリスナーを設定
+            mMap.setOnMapClickListener { tapLocation ->
+                // タップされた場所をリストに追加
+                tappedLocations.add(tapLocation)
+
+                // ポイントが2つ以上ある場合、ポリラインを描画
+                if (tappedLocations.size >= 2) {
+                    // 前のポリラインを削除する場合はここにコメントを外してください
+                    // mMap.clear()
+
+                    // ポリラインの属性（色や幅など）を設定するためのPolylineOptionsを作成
+                    val polylineOptions = PolylineOptions()
+                        .width(5f) // ポリラインの幅をピクセル単位で設定
+
+                    // タップされた場所をポリラインに追加
+                    for (location in tappedLocations) {
+                        polylineOptions.add(location)
+                    }
+
+                    // ポリラインを地図に追加
+                    mMap.addPolyline(polylineOptions)
+                }
+            }*/
+
+// タップされた位置を格納するリストを定義します
+val tappedLocations: MutableList<LatLng> = mutableListOf()
+
+// マップクリックのリスナーを設定します
+            mMap.setOnMapClickListener { tapLocation ->
+                // タップされた位置をリストに追加します
+                tappedLocations.add(tapLocation)
+
+                // マーカーを作成してマップに追加します
+                val markerOptions = MarkerOptions()
+                    .position(tapLocation)
+                    .title("Marker ${tappedLocations.size}") // タイトルを設定します
+                mMap.addMarker(markerOptions)
+
+                // リストに少なくとも2つのポイントがある場合、ポリラインを描画します
+                if (tappedLocations.size >= 2) {
+                    // 前のポリラインを削除する必要がある場合は削除します
+                    // mMap.clear() // 前のポリラインを消去したい場合はこの行のコメントを外してください
+
+                    // ポリラインの属性（色、幅など）を設定するための PolylineOptions を作成します
+                    val polylineOptions = PolylineOptions()
+                        .width(5f) // ポリラインの幅をピクセルで設定します
+
+                    // 全てのタップされた位置をポリラインに追加します
+                    for (location in tappedLocations) {
+                        polylineOptions.add(location)
+                    }
+
+                    // マップにポリラインを追加します
+                    mMap.addPolyline(polylineOptions)
+                }
+            }
+
+
+
+
+
         }
 
 
-
+/*longtap
         mMap.setOnMapLongClickListener { longpushLocation: LatLng ->
             val newlocation = LatLng(longpushLocation.latitude, longpushLocation.longitude)
             mMap.addMarker(
@@ -95,18 +164,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     .title("" + longpushLocation.latitude + " :" + longpushLocation.longitude)
             )
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newlocation, 17.5f))
+        }*/
+
+            /**val cUpdate = CameraUpdateFactory.newLatLngZoom(
+                LatLng(34.98507661036779, 135.75255078869654), 17.5f
+            )
+            mMap.moveCamera(cUpdate)*/
+
+
         }
 
-        val cUpdate = CameraUpdateFactory.newLatLngZoom(
-            LatLng(34.98507661036779, 135.75255078869654), 17.5f
-        )
-        mMap.moveCamera(cUpdate)
 
 
-
-
-    }
-
-
-
-}
