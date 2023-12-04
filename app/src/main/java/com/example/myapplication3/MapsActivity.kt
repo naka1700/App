@@ -22,6 +22,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private var location: LatLng? = null
+    private val tappedLocations: MutableList<LatLng> = mutableListOf() // マーカー位置を保持するプロパティ
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +41,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         sendButton.setOnClickListener { v: View? ->
             val intent = Intent(application, HomeActivity::class.java)
             startActivity(intent)
+        }
+        val removeMarkersButton = findViewById<Button>(R.id.削除_button)
+        removeMarkersButton.setOnClickListener {
+            undoLastAction()
         }
 
 
@@ -72,52 +78,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         //以下マップピンのコード
         location = LatLng(34.98507661036779, 135.75255078869654)
-        mMap.addMarker(MarkerOptions().position(location).title("Marker in 京都コンピュータ学院"))
+        /*mMap.addMarker(MarkerOptions().position(location).title("Marker in 京都コンピュータ学院"))*/
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 17.5F));
 
-
-        /** //tap
-        mMap.setOnMapClickListener { tapLocation: LatLng ->
-            // tapされた位置の緯度経度
-            location = LatLng(tapLocation.latitude, tapLocation.longitude)
-            val pin: String = java.lang.String.format(
-                Locale.US,
-                "%f, %f",
-                tapLocation.latitude,
-                tapLocation.longitude
-            )
-            mMap.addMarker(MarkerOptions().position(location).title(pin))
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 17.5f))
-
-            // タップされた場所のリストを定義
-            val tappedLocations: MutableList<LatLng> = mutableListOf()
-
-// マップのクリックリスナーを設定
-            mMap.setOnMapClickListener { tapLocation ->
-                // タップされた場所をリストに追加
-                tappedLocations.add(tapLocation)
-
-                // ポイントが2つ以上ある場合、ポリラインを描画
-                if (tappedLocations.size >= 2) {
-                    // 前のポリラインを削除する場合はここにコメントを外してください
-                    // mMap.clear()
-
-                    // ポリラインの属性（色や幅など）を設定するためのPolylineOptionsを作成
-                    val polylineOptions = PolylineOptions()
-                        .width(5f) // ポリラインの幅をピクセル単位で設定
-
-                    // タップされた場所をポリラインに追加
-                    for (location in tappedLocations) {
-                        polylineOptions.add(location)
-                    }
-
-                    // ポリラインを地図に追加
-                    mMap.addPolyline(polylineOptions)
-                }
-            }*/
-
 // タップされた位置を格納するリストを定義します
-val tappedLocations: MutableList<LatLng> = mutableListOf()
+
 
 // マップクリックのリスナーを設定します
             mMap.setOnMapClickListener { tapLocation ->
@@ -148,28 +113,55 @@ val tappedLocations: MutableList<LatLng> = mutableListOf()
                     mMap.addPolyline(polylineOptions)
                 }
             }
-
-
-
-
-
         }
 
 
-/*longtap
-        mMap.setOnMapLongClickListener { longpushLocation: LatLng ->
-            val newlocation = LatLng(longpushLocation.latitude, longpushLocation.longitude)
-            mMap.addMarker(
-                MarkerOptions().position(newlocation)
-                    .title("" + longpushLocation.latitude + " :" + longpushLocation.longitude)
-            )
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newlocation, 17.5f))
-        }*/
+   /* // 逆順でマップピンを削除する関数
+    private fun removeMarkersAndPolylines() {
+        // ポリラインを削除します
+          mMap.clear()
+          tappedLocations.clear()
 
-            /**val cUpdate = CameraUpdateFactory.newLatLngZoom(
-                LatLng(34.98507661036779, 135.75255078869654), 17.5f
-            )
-            mMap.moveCamera(cUpdate)*/
+       // tappedLocations リストから逆順でマーカーを削除します
+        for (i in tappedLocations.size - 1 downTo 0) {
+            // マーカーを削除します
+            val removedMarker = mMap.addMarker(MarkerOptions().position(tappedLocations[i]))
+            removedMarker.remove() // マーカーをマップから削除します
+        }
+    }*/
+
+
+
+    // 直前の操作を取り消す
+    private fun undoLastAction() {
+        // リストに少なくとも1つのポイントがある場合のみ、直前の操作を取り消します
+        if (tappedLocations.isNotEmpty()) {
+            val lastIndex = tappedLocations.size - 1
+
+            // 直前に追加されたマーカーを削除します
+            mMap.clear() // マップ上の全てのオーバーレイ（マーカーとポリライン）を削除
+
+            // 新しいマーカーとポリラインを描画します
+            for (i in 0 until lastIndex) {
+                val markerOptions = MarkerOptions()
+                    .position(tappedLocations[i])
+                    .title("Marker ${i + 1}")
+                mMap.addMarker(markerOptions)
+            }
+
+            val polylineOptions = PolylineOptions()
+                .width(5f)
+
+            for (i in 0 until lastIndex) {
+                polylineOptions.add(tappedLocations[i])
+            }
+
+            mMap.addPolyline(polylineOptions)
+
+            // 直前の操作を取り消した後、最後の位置をリストから削除します
+            tappedLocations.removeAt(lastIndex)
+        }
+    }
 
 
         }
