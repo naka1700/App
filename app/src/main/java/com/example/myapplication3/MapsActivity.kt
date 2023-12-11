@@ -76,7 +76,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * wawon
      * aaaaaaaa
      * おおおお
-     *
+     *マップ保存
      * マップアプリ作成
      *
      */
