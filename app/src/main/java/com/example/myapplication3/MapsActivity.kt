@@ -74,7 +74,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * なにぬねの
      * はひふへほ
      * wawon
-     * aaaaaaaa
+     * aaaaaaaaあああ
      * おおおお
      *マップ保存
      * マップアプリ作成
