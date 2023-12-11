@@ -10,11 +10,12 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import java.util.*
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -23,6 +24,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMapsBinding
     private var location: LatLng? = null
     private val tappedLocations: MutableList<LatLng> = mutableListOf() // マーカー位置を保持するプロパティ
+
+    val db = Firebase.firestore//クラウドに保存するためのプロパティ
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +51,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             undoLastAction()
         }
 
-
+        val seveMarkersButton = findViewById<Button>(R.id.保存_button)
+        seveMarkersButton.setOnClickListener {
+            seve()
+        }
     }
 
     /**
@@ -161,6 +168,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             // 直前の操作を取り消した後、最後の位置をリストから削除します
             tappedLocations.removeAt(lastIndex)
         }
+    }
+    private fun seve(){  //保存ボタンを押したときの処理
+
+        val mDocRef = FirebaseFirestore.getInstance().collection("コレクション名")//コレクションの指定
+
+        val data: MutableMap<String, Any> = HashMap()//フィールド名と保存する座標情報を入れるための変数
+        data["フィールド名"] = tappedLocations//箱
+        mDocRef.add(data)//データを加える
+
+        //ホーム画面に戻る
+        val intent = Intent(application, HomeActivity::class.java)
+        startActivity(intent)
     }
 
 
