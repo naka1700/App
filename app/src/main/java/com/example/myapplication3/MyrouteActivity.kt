@@ -36,7 +36,7 @@ class MyrouteActivity : AppCompatActivity() , OnMapReadyCallback {
 
         val executionMarkersButton = findViewById<Button>(R.id.実行_button)
         executionMarkersButton.setOnClickListener {
-            execution()
+            //execution()
         }
     }
     override fun onMapReady(googleMap: GoogleMap) {
@@ -51,15 +51,15 @@ class MyrouteActivity : AppCompatActivity() , OnMapReadyCallback {
     }
     private fun execution() {  // 保存ボタンを押したときの処理
         // 確認のダイアログを表示
-        val mDocRef =FirebaseFirestore.getInstance().collection("コレクション名").document("1PkHI00AlzPutv2RdUH").get()
-        val document =mDocRef.getResult()
+        val mDocRef =FirebaseFirestore.getInstance().collection("コレクション名").document("1PkHI00AlzPutv2RdUH").get().addOnSuccessListener {mDocRef ->
 
-        var tapped = document.get("フィールド名") as MutableList<LatLng>
-        for (rang in 1..tapped.size) {
-            val markerOptions = MarkerOptions()
-                .position(tapped[rang])
-                .title("Marker ${tapped[rang]}") // タイトルを設定します
-            mMap.addMarker(markerOptions)
+            var tapped = mDocRef.get("フィールド名") as MutableList<LatLng>
+            for (rang in 1..tapped.size) {
+                val markerOptions = MarkerOptions()
+                    .position(tapped[rang])
+                    .title("Marker ${tapped[rang]}") // タイトルを設定します
+                mMap.addMarker(markerOptions)
+            }
         }
     }
 }
