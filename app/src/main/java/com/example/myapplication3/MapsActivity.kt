@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication3.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -169,15 +170,34 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             tappedLocations.removeAt(lastIndex)
         }
     }
-    private fun seve(){  //保存ボタンを押したときの処理
 
-        val mDocRef = FirebaseFirestore.getInstance().collection("コレクション名")//コレクションの指定
 
-        val data: MutableMap<String, Any> = HashMap()//フィールド名と保存する座標情報を入れるための変数
-        data["フィールド名"] = tappedLocations//箱
-        mDocRef.add(data)//データを加える
+    private fun showSaveConfirmationDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("保存しますか？")
+        builder.setMessage("変更を保存しますか？")
+        builder.setPositiveButton("保存") { dialog, which ->
+            saveToFirestore() // データを保存する処理を実行
+        }
+        builder.setNegativeButton("キャンセル") { dialog, which ->
+            // キャンセルボタンが押された場合の処理
+        }
+        val dialog = builder.create()
+        dialog.show()
+    }
 
-        //ホーム画面に戻る
+    private fun seve() {  // 保存ボタンを押したときの処理
+        // 確認のダイアログを表示
+        showSaveConfirmationDialog()
+    }
+
+    private fun saveToFirestore() {
+        val mDocRef = FirebaseFirestore.getInstance().collection("コレクション名")
+        val data: MutableMap<String, Any> = HashMap()
+        data["フィールド名"] = tappedLocations
+        mDocRef.add(data)
+
+        // ホーム画面に戻る
         val intent = Intent(application, HomeActivity::class.java)
         startActivity(intent)
     }
