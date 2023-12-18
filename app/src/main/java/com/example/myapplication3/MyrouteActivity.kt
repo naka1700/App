@@ -63,8 +63,8 @@ class MyrouteActivity : AppCompatActivity() , OnMapReadyCallback {
             }
         }.addOnFailureListener { exception ->
             val builder = AlertDialog.Builder(this)
-            builder.setTitle("保存しますか？")
-            builder.setMessage("変更を保存しますか？")
+            builder.setTitle("読み込みますか？")
+            builder.setMessage("失敗していますよ")
             builder.setPositiveButton("保存") { dialog, which ->
 
             }
