@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication3.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -60,6 +61,19 @@ class MyrouteActivity : AppCompatActivity() , OnMapReadyCallback {
                     .title("Marker ${tapped[rang]}") // タイトルを設定します
                 mMap.addMarker(markerOptions)
             }
+        }.addOnFailureListener { exception ->
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("保存しますか？")
+            builder.setMessage("変更を保存しますか？")
+            builder.setPositiveButton("保存") { dialog, which ->
+
+            }
+            builder.setNegativeButton("キャンセル") { dialog, which ->
+                // キャンセルボタンが押された場合の処理
+            }
+            val dialog = builder.create()
+            dialog.show()
         }
+
     }
 }
