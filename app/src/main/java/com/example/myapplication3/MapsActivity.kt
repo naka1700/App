@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication3.databinding.ActivityMapsBinding
@@ -192,10 +193,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     // 以下保存機能
     private fun showSaveConfirmationDialog() {
         val builder = AlertDialog.Builder(this)
+        val editText = EditText(applicationContext);
+        builder.setView(editText)
         builder.setTitle("保存しますか？")
         builder.setMessage("変更を保存しますか？")
         builder.setPositiveButton("保存") { dialog, which ->
-            saveToFirestore() // データを保存する処理を実行
+            var document =editText.text.toString()
+            saveToFirestore(document) // データを保存する処理を実行
         }
         builder.setNegativeButton("キャンセル") { dialog, which ->
             // キャンセルボタンが押された場合の処理
@@ -209,11 +213,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         showSaveConfirmationDialog()
     }
 
-    private fun saveToFirestore() {
-        val mDocRef = FirebaseFirestore.getInstance().collection("コレクション名")
+    private fun saveToFirestore(document: String) {
+        val mDocRef = FirebaseFirestore.getInstance().collection("コレクション名").document(document)
         val data: MutableMap<String, Any> = HashMap()
         data["フィールド名"] = tappedLocations
-        mDocRef.add(data)
+        mDocRef.set(data)
 
         // ホーム画面に戻る
         val intent = Intent(application, HomeActivity::class.java)
