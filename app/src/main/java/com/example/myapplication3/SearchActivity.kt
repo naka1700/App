@@ -110,8 +110,8 @@ class SearchActivity : AppCompatActivity() {
             val pProfileRef: CollectionReference = db.collection("コレクション名")
             pProfileRef.document(selectMessage).delete().addOnCompleteListener{
                 Log.d("DELETE","削除完了")
-                /*val intent = Intent(application, HomeActivity::class.java)
-                startActivity(intent)*/
+                val intent = Intent(application, HomeActivity::class.java)
+                startActivity(intent)
             }
         }
         builder.setNegativeButton("キャンセル") { dialog, which ->
