@@ -67,6 +67,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         seveMarkersButton.setOnClickListener {
             seve()
         }
+
         // 位置情報クライアントの初期化
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     }
@@ -76,10 +77,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
         mMap.isMyLocationEnabled = true
 
+
+        /*
         //以下マップピンのコード
         location = LatLng(34.98507661036779, 135.75255078869654)
         /*mMap.addMarker(MarkerOptions().position(location).title("Marker in 京都コンピュータ学院"))*/
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 17.5F));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 17.5F));*/
 
         /*位置情報権限の習得*/
 
@@ -106,8 +109,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
-
-// マップクリックのリスナーを設定します
+        // 以下マップピン
             mMap.setOnMapClickListener { tapLocation ->
                 // タップされた位置をリストに追加します
                 tappedLocations.add(tapLocation)
@@ -155,7 +157,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
 
-    // 直前の操作を取り消す
+    // 以下直前の操作の取り消し
     private fun undoLastAction() {
         // リストに少なくとも1つのポイントがある場合のみ、直前の操作を取り消します
         if (tappedLocations.isNotEmpty()) {
@@ -187,6 +189,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
+    // 以下保存機能
     private fun showSaveConfirmationDialog() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("保存しますか？")
