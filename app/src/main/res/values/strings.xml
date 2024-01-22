@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Original Route</string>
+    <string name="app_name">オリジナルルートマップ</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="title_activity_search">SearchActivity</string>
