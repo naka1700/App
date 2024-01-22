@@ -1,5 +1,6 @@
 package com.example.myapplication3
 
+import android.Manifest
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
@@ -25,11 +26,21 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+
 
 class MyrouteActivity : AppCompatActivity() , OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private var location: LatLng? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,16 +60,42 @@ class MyrouteActivity : AppCompatActivity() , OnMapReadyCallback {
         executionMarkersButton.setOnClickListener {
             execution(message)
         }
+        // 位置情報クライアントの初期化
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
     }
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        mMap.isMyLocationEnabled = true
 
         //以下マップピンのコード
         location = LatLng(34.98507661036779, 135.75255078869654)
         /*mMap.addMarker(MarkerOptions().position(location).title("Marker in 京都コンピュータ学院"))*/
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 17.5F));
         Log.i(String.toString(),"k")
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                1
+            )
+            return
+        }
+        /*位置情報の習得と初期位置*/
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            location?.let {
+                val currentLatLng = LatLng(location.latitude, location.longitude)
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17.5f))
+            }
+        }
 
 
     }

@@ -1,5 +1,6 @@
 package com.example.myapplication3
 
+import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -18,6 +19,15 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -25,6 +35,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMapsBinding
     private var location: LatLng? = null
     private val tappedLocations: MutableList<LatLng> = mutableListOf() // マーカー位置を保持するプロパティ
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     val db = Firebase.firestore//クラウドに保存するためのプロパティ
 
@@ -56,40 +67,44 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         seveMarkersButton.setOnClickListener {
             seve()
         }
+        // 位置情報クライアントの初期化
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     * 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
-     * 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
-     * あいうえお
-     * かきくけこ
-     * さしすせそ
-     * たちつてと
-     * なにぬねの
-     * はひふへほ
-     * wawon
-     * aaaaaaaaあああ
-     * おおおお
-     *マップ保存
-     * マップアプリ作成
-     *
-     */
+
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        mMap.isMyLocationEnabled = true
 
         //以下マップピンのコード
         location = LatLng(34.98507661036779, 135.75255078869654)
         /*mMap.addMarker(MarkerOptions().position(location).title("Marker in 京都コンピュータ学院"))*/
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 17.5F));
 
-// タップされた位置を格納するリストを定義します
+        /*位置情報権限の習得*/
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                1
+            )
+            return
+        }
+        /*位置情報の習得と初期位置*/
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            location?.let {
+                val currentLatLng = LatLng(location.latitude, location.longitude)
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17.5f))
+            }
+        }
 
 
 // マップクリックのリスナーを設定します
