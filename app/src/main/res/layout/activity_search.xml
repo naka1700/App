@@ -32,10 +32,10 @@
 
 
     <Button
-        android:id="@+id/実行_button"
+        android:id="@+id/検索_button"
         android:layout_width="100dp"
         android:layout_height="60dp"
-        android:text="実行"
+        android:text="検索"
         android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

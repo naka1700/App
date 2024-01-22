@@ -26,9 +26,8 @@ class SearchActivity : AppCompatActivity() {
             val intent = Intent(application, HomeActivity::class.java)
             startActivity(intent)
         }
-        val zikkouButton = findViewById<Button>(R.id.実行_button)
+        val zikkouButton = findViewById<Button>(R.id.検索_button)
         zikkouButton.setOnClickListener {
-            val intent =Intent(application,MyrouteActivity::class.java)
             execution()
 
         }
@@ -81,7 +80,7 @@ class SearchActivity : AppCompatActivity() {
        private fun sendmessage(item: Any) {
            val intent =Intent(application,MyrouteActivity::class.java)
            val text =item.toString()
-           intent.putExtra("Test_KEY",text)
+           intent.putExtra("Message_KEY",text)
            startActivity(intent)
        }
 

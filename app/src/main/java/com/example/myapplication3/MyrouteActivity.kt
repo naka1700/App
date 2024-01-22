@@ -43,7 +43,7 @@ class MyrouteActivity : AppCompatActivity() , OnMapReadyCallback {
             val intent = Intent(application, HomeActivity::class.java)
             startActivity(intent)
         }
-        var message = intent.getStringExtra("Test_KEY").toString()
+        var message = intent.getStringExtra("Message_KEY").toString()
         Log.d("GG",message)
         val executionMarkersButton = findViewById<Button>(R.id.実行_button)
         executionMarkersButton.setOnClickListener {
