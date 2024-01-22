@@ -15,16 +15,15 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolygonOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
-import kotlin.math.log
 
 
 class MyrouteActivity : AppCompatActivity() , OnMapReadyCallback {
@@ -44,11 +43,13 @@ class MyrouteActivity : AppCompatActivity() , OnMapReadyCallback {
             val intent = Intent(application, HomeActivity::class.java)
             startActivity(intent)
         }
-
+        var message = intent.getStringExtra("Test_KEY").toString()
+        Log.d("GG",message)
         val executionMarkersButton = findViewById<Button>(R.id.実行_button)
         executionMarkersButton.setOnClickListener {
-            execution()
+            execution(message)
         }
+
     }
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
@@ -61,50 +62,96 @@ class MyrouteActivity : AppCompatActivity() , OnMapReadyCallback {
 
 
     }
-    private fun execution() {
-        //val mDocRef =FirebaseFirestore.getInstance().collection("コレクション名").document("1PkHI00AlzPutv2RdUH")
-        val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-        val pProfileRef: CollectionReference = db.collection("コレクション名")
-        pProfileRef.get().addOnCompleteListener(object : OnCompleteListener<QuerySnapshot?> {
+    private fun execution(message: String) {
+        if(message==null||message==""||message=="null"){
+            //ホーム画面から直接マイルートを開くとこれになる
+            //val mDocRef =FirebaseFirestore.getInstance().collection("コレクション名").document("1PkHI00AlzPutv2RdUH")
+            val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+            val pProfileRef: CollectionReference = db.collection("コレクション名")
+            pProfileRef.get().addOnCompleteListener(object : OnCompleteListener<QuerySnapshot?> {
 
-            override fun onComplete(@NonNull task: Task<QuerySnapshot?>) {
-                if (task.isSuccessful) {
-                    for (document in task.result!!) {
-                        Log.d(TAG, document.id + " => " + document.data)
-                        Log.d("TAG", document::class.java.toString())
-                        val qds = document as QueryDocumentSnapshot
-                        //クラウドから取り出したdocumentの型をLISTにする
-                        val polyPoint = document.get("フィールド名") as List<*>
+                override fun onComplete(@NonNull task: Task<QuerySnapshot?>) {
+                    if (task.isSuccessful) {
+                        for (document in task.result!!) {
+                            Log.d(TAG, document.id + " => " + document.data)
+                            Log.d("TAG", document::class.java.toString())
+                           // val qds = document as QueryDocumentSnapshot
+                            //クラウドから取り出したdocumentの型をLISTにする
+                            val polyPoint = document.get("フィールド名") as List<*>
                             val length: Int = polyPoint.size
                             if (length == 0) {
                                 return
                             }
                             //val poly = PolygonOptions()
                             val markerOptions = MarkerOptions()
-                        if(polyPoint.size>=2) {
-                            val polylineOptions = PolylineOptions()
-                                .width(5f)
+                            if(polyPoint.size>=2) {
+                                val polylineOptions = PolylineOptions()
+                                    .width(5f)
 
-                            for (i in 0 until length) {
-                                var dt = polyPoint[i].toString()
-                                var da = dt.split("=", ",", "}")
-                                var b = da[1].toDouble()
-                                var c = da[3].toDouble()
-                                var la: LatLng = LatLng(b, c)
-                                markerOptions.position(la)
-                                polylineOptions.add(la)
-                                Log.d("TAG", i.toString())
-                                mMap.addMarker(markerOptions)
+                                for (i in 0 until length) {
+                                    var dt = polyPoint[i].toString()
+                                    var da = dt.split("=", ",", "}")
+                                    var b = da[1].toDouble()
+                                    var c = da[3].toDouble()
+                                    var la: LatLng = LatLng(b, c)
+                                    markerOptions.position(la)
+                                    polylineOptions.add(la)
+                                    Log.d("TAG", i.toString())
+                                    mMap.addMarker(markerOptions)
+                                }
+                                mMap.addPolyline(polylineOptions)
                             }
-                            mMap.addPolyline(polylineOptions)
+                            break
                         }
-                        break
+                    } else {
+                        Log.d(TAG, "Error getting documents:", task.getException())
                     }
-                } else {
-                    Log.d(TAG, "Error getting documents:", task.getException())
                 }
-            }
-        })
+            })
+        }else{//ルート検索から選ぶとこれになる
+            Log.d("MESSAGE", "送られてきたメッセージは"+message)
+            //val mDocRef =FirebaseFirestore.getInstance().collection("コレクション名").document("1PkHI00AlzPutv2RdUH")
+            val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+            val pProfileRef: CollectionReference = db.collection("コレクション名")
+            var pProfileRef2 = pProfileRef.document(message)
+            pProfileRef2.get().addOnCompleteListener(object : OnCompleteListener<DocumentSnapshot?> {
+
+                override fun onComplete(@NonNull task: Task<DocumentSnapshot?>) {
+                    if (task.isSuccessful) {
+                        var document = task.result
+                        Log.d(TAG, "入力されています"+document.toString())
+                            //クラウドから取り出したdocumentの型をLISTにする
+                            val polyPoint = document?.get("フィールド名") as List<*>
+                            val length: Int = polyPoint.size
+                            if (length == 0) {
+                                return
+                            }
+                            //val poly = PolygonOptions()
+                            val markerOptions = MarkerOptions()
+                            if(polyPoint.size>=2) {
+                                val polylineOptions = PolylineOptions()
+                                    .width(5f)
+                                for (i in 0 until length) {
+                                    var dt = polyPoint[i].toString()
+                                    var da = dt.split("=", ",", "}")
+                                    var b = da[1].toDouble()
+                                    var c = da[3].toDouble()
+                                    var la: LatLng = LatLng(b, c)
+                                    markerOptions.position(la)
+                                    polylineOptions.add(la)
+                                    Log.d("TAG", i.toString())
+                                    mMap.addMarker(markerOptions)
+                                }
+                                mMap.addPolyline(polylineOptions)
+                            }
+                    } else {
+                        Log.d(TAG, "Error getting documents:", task.getException())
+                    }
+                }
+            })
+
+        }
+
         }
         //val r = mDocRef.get().result
         //Log.d("TAG",r.toString())
